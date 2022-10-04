@@ -1,0 +1,64 @@
+Nume: Ciineanu Stefan-Andrei
+Grupa: 336CA
+Username pe ACS: stefan.ciineanu
+
+Pentru aceasta tema am pornit initial de la laboratorul 7, cel cu
+thread pool si workeri, dar urmarind enuntul si exemplul de executie
+al problemei am redus rezolvarea in urmatorul fel: citesc, creez
+taskurile pt. Map/Reduce, aloc taskurile workerilor(threadurilor)
+si pornesc executia threadurilor. Asadar, in final, tema nu a mai
+avut nicio legatura cu laboratorul 7.
+Astfel, pentru realizarea algoritmului meu am urmarit pas cu pas
+exemplul din enunt.
+Rezolvarea acestei teme a dispus crearea a 5 clase:
+- Tema2 (sau Main-ul) in care fac citirea, taskurile, repartizarea
+taskurilor catre threaduri, crearea si pornirea threadurilor pt Map
+si Reduce, afisare in fisier;
+- TaskMap si TaskReduce in care salvez datele taskurilor ce vor fi
+atribuite workerilor (threadurilor) pt. realizarea Map si Reduce;
+- MapThread si ReduceThread sunt clase care extind clasa Thread,
+iar implementand metoda run() vom realiza intr-un mod paralel
+procesarea documentelor;
+
+Pentru inceput, citesc dimensiunea unui fragment, numarul de threaduri
+si lista cu numele documentelor. In continuare pentru fiecare document
+din lista citesc continutul si creez taskurile in functie de offset si
+dimensiune (poz de start si end a secventei din document si tin cont ca
+la sfarsitul fisierului dimensiunea poate fi mai mica).
+Urmatorul pas reprezinta repartizarea taskurilor catre workeri(threaduri).
+Pentru asta am creat un map in care cheia este id-ul threadului, iar
+valoarea va fi reprezentata de o lista de taskuri. Astfel, fiecare task va
+fi impartit echilibrat threadurilor, iar fiecare thread va rezolva pe rand
+din aceasta lista de taskuri cate un task. Cred ca mai poate fi inteleasa
+si ca un pool atribuit fiecarui worker.
+Dupa aceasta pornesc threadurile care vor executa Map. Un thread va parcurge
+lista de taskuri si pentru inceput va verifica daca cuvantul de la finalul/
+inceputul bufferul din task este segmentat la mijloc. Daca da, se va adauga
+continuarea cuvantului la finalul bufferului sau se va sterge partea ramasa
+din cuvantul de la inceputul bufferului. In continuare, creez dictionarele
+partiale in care salvam pt. secventa curenta lungimile cuvintelor si aparitiile.
+Dupa aceasta, impart bufferul actualizat cu cuvantul segmentat la mijloc in
+cuvinte. Aici am intampinat probleme deoarece obtineam erori de 0.01 din cauza
+delimitatorilor. Dupa impartirea in cuvinte a bufferului voi salva lungimile,
+aparitiile si maximele cuvintelor in mapuri partiale.
+In ceea ce priveste reduce, am procedat similar Mapului, creand taskurile
+corespunzatoare numarului de documente, pe care le-am alocat threadurilor
+folosind un map ce salveaza id-ul threadului si lista de taskuri alocate.
+Taskurile pentru Reduce vor include numele fisierului din care au fost
+extrase datele, o lista cu cuvintele de lungime maxima si un map care
+are drept cheie lungimea cuvantului, iar valoare numarul de aparitii ale
+acestuia, toate acestea fiind extrase din secventele atribuite lui Map
+pt acel document. Astfel voi reuni dictionarele partiale ale secventelor
+intr-un dictionar per document, apoi voi calcula numarul total de cuvinte,
+suma cu formula bazata pe sirul lui Fibonacci si rangul.
+In final, voi avea in Tema2 un SortedSet care imi va retine rangurile
+sortate. Pentru afisare voi parcurge aceste ranguri descrescator si voi
+expune in fisierul de iesire numele fisierului din care a fost extras
+rangul, lungimea cuvantului maxim si numarul de aparitii al acestei
+lungimi.
+
+Am creat un Makefile pentru a usura testarea si debugul temei.
+Fisierele de intrare foarte mari au facut foarte dificil debuggingul, si
+am intampinat problema sa-mi difere la un test un singur rang
+cu 0.01.
+
